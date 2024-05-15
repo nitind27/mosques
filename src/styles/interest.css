@@ -1,0 +1,110 @@
+.option-section-interest {
+  display: flex;
+  margin-top: 5%;
+  background-color: white;
+  height: 40px;
+  align-items: center;
+}
+.shade-interest {
+  background-color: #f5f5f5;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  z-index: -1;
+}
+.option-1-interest {
+  margin-left: 10%;
+  cursor: pointer;
+}
+.option-2-interest {
+  margin-left: 10%;
+  cursor: pointer;
+}
+.container-interest {
+  margin-top: 4%;
+  background-color: white;
+}
+
+@media (max-width: 750px) {
+  .container-view-interest {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .left-container-view-interest {
+    width: 100% !important;
+  }
+  .left-container-view-interest {
+    text-align: center;
+  }
+  .bottom-container-search {
+    width: 100%;
+  }
+  .user-info {
+    font-size: 10px;
+  }
+}
+
+/*Left Side*/
+.container-view-interest {
+  display: flex;
+}
+.left-container-view-interest {
+  width: 50%;
+}
+.view-text-interest {
+  margin-left: 2%;
+  font-size: 30px;
+  padding: 10px;
+}
+.divider-interest {
+  width: 1px;
+  background-color: #cacaca;
+}
+#heart {
+  width: 20px;
+  background: radial-gradient(circle at 60% 65%, red 64%, transparent 65%) top
+      left,
+    radial-gradient(circle at 40% 65%, red 64%, transparent 65%) top right,
+    linear-gradient(to bottom left, red 43%, transparent 43%) bottom left,
+    linear-gradient(to bottom right, red 43%, transparent 43%) bottom right;
+  background-size: 50% 50%;
+  background-repeat: no-repeat;
+  display: inline-block;
+}
+#heart::before {
+  content: "";
+  display: block;
+  padding-top: 100%;
+}
+#blackHeart {
+  width: 20px;
+  
+  background: radial-gradient(circle at 60% 65%, black 64%, transparent 65%) top
+      left,
+    radial-gradient(circle at 40% 65%, black 64%, transparent 65%) top right,
+    linear-gradient(to bottom left, black 43%, transparent 43%) bottom left,
+    linear-gradient(to bottom right, black 43%, transparent 43%) bottom right;
+  background-size: 50% 50%;
+  background-repeat: no-repeat;
+  display: inline-block;
+}
+#blackHeart:hover{
+
+    width: 20px;
+    
+    background: radial-gradient(circle at 60% 65%, red 64%, transparent 65%) top
+        left,
+      radial-gradient(circle at 40% 65%, red 64%, transparent 65%) top right,
+      linear-gradient(to bottom left, red 43%, transparent 43%) bottom left,
+      linear-gradient(to bottom right, red 43%, transparent 43%) bottom right;
+    background-size: 50% 50%;
+    background-repeat: no-repeat;
+    display: inline-block;
+  
+}
+#blackHeart::before {
+  content: "";
+  display: block;
+  padding-top: 100%;
+}
