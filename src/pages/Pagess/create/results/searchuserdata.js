@@ -1,4 +1,6 @@
 import { useState, useEffect, useContext, use } from "react";
+import ImageSlider from "react-simple-image-slider";
+import 'react-slideshow-image/dist/styles.css'
 
 import { useRouter } from "next/navigation";
 import { AppContext } from "../../AppContext";
@@ -821,6 +823,67 @@ export default function SearchUserData() {
     fetchData();
   }, []);
 
+  // Image render
+  const renderUserImages = (userInfo) => {
+    const userImages = imageData
+      .flat()
+      .filter((img) => img.email === userInfo.email)
+      .map((image, index) => ({
+        url:
+          index === 0 ? `data:image/jpeg;base64,${image.image}` : image.image,
+      }));
+
+    const isFemaleWithApproval =
+      userInfo.gender === "female" &&
+      requestCheck.some(
+        (request) =>
+          (request.sender_email === userInfo.email ||
+            userInfo.email === email) &&
+          request.status === "approved"
+      );
+
+    const shouldDisplayImages =
+      userInfo.gender !== "female" || isFemaleWithApproval;
+
+    if (userImages.length === 0) {
+      return (
+        <NextImage
+          src="/female.jpeg"
+          width={150}
+          height={150}
+          style={{ border: "1px solid black" }}
+          alt="Female Placeholder"
+        />
+      );
+    }
+
+    if (!shouldDisplayImages) {
+      return (
+        <NextImage
+          src="/private.jpg"
+          width={150}
+          height={150}
+          style={{ border: "1px solid black" }}
+          alt="Private"
+        />
+      );
+    }
+
+    return (
+      <div className="image-slider-container">
+      <ImageSlider
+        width={150}
+        height={150}
+        images={userImages}
+        showBullets={false}
+        showNavs={true}
+        className="slider-with-margin"
+        
+      />
+    </div>
+    );
+  };
+
   return (
     <div>
       <div className="bottom-container-search">
@@ -828,95 +891,17 @@ export default function SearchUserData() {
           <div key={userInfo.id} className="result-parent-container-search">
             <div className="result-img-parent-search">
               <div className="img-container-search">
-                <Link
-                  onClick={(e) => {
-                    e.preventDefault(); // Prevent the default behavior of the link
-                    setSelectedUserInfo(userInfo);
-                    ViewBio(e, userInfo.email);
-                    router.push({
-                      pathname:
-                        "/Pagess/create/results/viewProfile/viewProfile",
-                      query: {
-                        name: JSON.stringify(userInfo),
-                      },
-                    });
-                  }}
-                  href="/Pagess/create/results/viewProfile/viewProfile"
-                >
-                  {loaded && (
-                    <div>
-                      {imageData.some(
-                        (images) =>
-                          images.filter((img) => img.email === userInfo.email)
-                            .length > 0
-                      ) ? (
-                        <div>
-                          {userInfo.gender !== "female" ? (
-                            imageData
-                              .flat()
-                              .filter((img) => img.email === userInfo.email)
-                              .map((image, index) => (
-                                <div key={index}>
-                                  <NextImage
-                                    key={index}
-                                    src={
-                                      index === 0
-                                        ? `data:image/jpeg;base64,${image.image}`
-                                        : image.image
-                                    }
-                                    width={150}
-                                    height={150}
-                                    style={{ border: "1px solid black" }}
-                                    alt={`Image ${index}`}
-                                  />
-                                </div>
-                              ))
-                          ) :   requestCheck.some(
-                            request => (request.sender_email === userInfo.email || userInfo.email === email) && request.status === "approved"
-                          ) ? (
-
-                            imageData
-                            .flat()
-                            .filter((img) => img.email === userInfo.email)
-                            .map((image, index) => (
-                              <div key={index}>
-                                <NextImage
-                                  key={index}
-                                  src={
-                                    index === 0
-                                      ? `data:image/jpeg;base64,${image.image}`
-                                      : image.image
-                                  }
-                                  width={150}
-                                  height={150}
-                                  style={{ border: "1px solid black" }}
-                                  alt={`Image ${index}`}
-                                />
-                              </div>
-                            ))
-                            
-                          ) : (
-                            <NextImage
-                              src="/private.jpg"
-                              width={150}
-                              height={150}
-                              style={{ border: "1px solid black" }}
-                              alt=""
-                            />
-                          )}
-                        </div>
-                      ) : (
-                        <NextImage
-                          src="/female.jpeg"
-                          width={150}
-                          height={150}
-                          style={{ border: "1px solid black" }}
-                          alt=""
-                        />
-                      )}
-                    </div>
-                  )}
-                </Link>
+                {loaded ? (
+                  renderUserImages(userInfo)
+                ) : (
+                  <NextImage
+                    src="/female.jpeg"
+                    width={150}
+                    height={150}
+                    style={{ border: "1px solid black" }}
+                    alt="Loading"
+                  />
+                )}
               </div>
             </div>
 
