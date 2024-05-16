@@ -493,6 +493,9 @@
   display: flex;
 }
 
+.active-text-search-stop{
+margin-top: 50px;
+}
 .result-line2-container-search {
   display: flex;
   width: 100%;
@@ -609,6 +612,8 @@
   pointer-events: none; /* Ignore pointer events */
   white-space: nowrap; /* Prevent wrapping */
   transition: opacity 0.5s; /* Smooth transition for opacity */
+
+  
 }
 
 .result-line3:hover::before {
@@ -941,7 +946,7 @@
 
 /* Customizing scrollbar */
 .msg-mini-container-search::-webkit-scrollbar {
-  width: 10px; /* Set width of the scrollbar */
+  width: 5px; /* Set width of the scrollbar */
   background-color: #f0f0f0; /* Set background color of the scrollbar track */
 }
 

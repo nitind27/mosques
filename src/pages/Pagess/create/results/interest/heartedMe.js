@@ -1,13 +1,18 @@
 import { useEffect, useState } from "react";
+import ResultHeart from "../../../../../../public/resultheartsvg";
 import Camera from "../../../../../../public/camerasvg";
 import Envelope from "../../../../../../public/envelope";
 import Stop from "../../../../../../public/stopsvg";
 import Excalim from "../../../../../../public/exclaimsvg";
 import WaliRed from "../../../../../../public/search/waliRed";
+import HeartClick from "../../../../../../public/heartClickSvg";
 import NextImage from "next/image";
+import Link from "next/link";
+import ReactCountryFlag from "react-country-flag";
 
 export default function HeartedMe() {
   const [data, setData] = useState([]);
+  const [requestCheck, setRequestCheck] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [imageData, setImageData] = useState(null);
   const [viewBio, setViewBio] = useState(false);
@@ -23,6 +28,8 @@ export default function HeartedMe() {
   const [blockStart, setBlockStart] = useState(0);
   //------Time Stamps---------
   const [timeStamp, setTimeStamp] = useState([]);
+  const { getCode, getName } = require("country-list");
+  const [showWali, setShowWali] = useState(false);
 
   //-------------Api to retrieve data------------------
   useEffect(() => {
@@ -153,36 +160,54 @@ export default function HeartedMe() {
   };
 
   //-------------------^^^^^^^^^^^^^^^^^^^^------------------
-  //----------------For profile image------------------
-  useEffect(() => {
-    var getImg = async () => {
-      try {
-        const emails = data.map((user) => user.email);
-        console.log("get image started", emails);
-        const res = await fetch("/api/createAcc/getProfileImgBulk", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            data: emails,
-          }),
-        });
-        const data2 = await res.json();
-        if (data2.error) {
-          setImageUrl(null);
-        } else {
-          console.log("Image URL: ", data2.image);
-          setImageData(data2.image);
+    //----------------For profile image------------------
+    useEffect(() => {
+      const getImages = async () => {
+        try {
+          const emails = data.map((user) => user.email);
+  
+          // Fetch images from the first endpoint
+          const res1 = await fetch("/api/createAcc/getProfileImgBulk", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              data: emails,
+            }),
+          });
+          const data1 = await res1.json();
+  
+          // Fetch images from the second endpoint
+          const res2 = await fetch("/api/createAcc/getProfileImgPublicBulk", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              data: emails,
+            }),
+          });
+          const data2 = await res2.json();
+  
+          // Check if either request failed
+          if (data1.error || data2.error) {
+            setLoaded(true);
+            return;
+          }
+  
+          // Combine image data from both endpoints
+          const imageData = [data1.image, data2.images];
+          // Set the image data and mark as loaded
+          setImageData(imageData);
           setLoaded(true);
+        } catch (error) {
+          console.error("Error fetching images:", error);
         }
-        setLoading(true);
-      } catch (error) {
-        console.log("Error on getting image: ", error);
-      }
-    };
-    getImg();
-  }, [data]);
+      };
+  
+      getImages();
+    }, [data]);
 
   //--------------------^^^^^^^^^^^^^-------------------
 
@@ -391,52 +416,133 @@ export default function HeartedMe() {
   //-----------------^^^^^^^^^^^^^^----------------
   return (
     <div>
-      <div className="bottom-container-search">
+       <div className="bottom-container-search">
         {data.map((userInfo) => (
           <div key={userInfo.id} className="result-parent-container-search">
             <div className="result-img-parent-search">
               <div className="img-container-search">
-                {loaded ? (
-                  <div>
-                    {imageData
-                      .filter((img) => img.email === userInfo.email)
-                      .map((img) => (
+                <Link
+                  onClick={(e) => {
+                    e.preventDefault(); // Prevent the default behavior of the link
+                    setSelectedUserInfo(userInfo);
+                    ViewBio(e, userInfo.email);
+                    router.push({
+                      pathname:
+                        "/Pagess/create/results/viewProfile/viewProfile",
+                      query: {
+                        name: JSON.stringify(userInfo),
+                      },
+                    });
+                  }}
+                  href="/Pagess/create/results/viewProfile/viewProfile"
+                >
+                  {loaded && (
+                    <div>
+                      {imageData.some(
+                        (images) =>
+                          images.filter((img) => img.email === userInfo.email)
+                            .length > 0
+                      ) ? (
+                        <div>
+                          {userInfo.gender !== "female" ? (
+                            imageData
+                              .flat()
+                              .filter((img) => img.email === userInfo.email)
+                              .map((image, index) => (
+                                <div key={index}>
+                                  <NextImage
+                                    key={index}
+                                    src={
+                                      index === 0
+                                        ? `data:image/jpeg;base64,${image.image}`
+                                        : image.image
+                                    }
+                                    width={150}
+                                    height={150}
+                                    style={{ border: "1px solid black" }}
+                                    alt={`Image ${index}`}
+                                  />
+                                </div>
+                              ))
+                          ) :   requestCheck.some(
+                            request => (request.sender_email === userInfo.email || userInfo.email === email) && request.status === "approved"
+                          ) ? (
+
+                            imageData
+                            .flat()
+                            .filter((img) => img.email === userInfo.email)
+                            .map((image, index) => (
+                              <div key={index}>
+                                <NextImage
+                                  key={index}
+                                  src={
+                                    index === 0
+                                      ? `data:image/jpeg;base64,${image.image}`
+                                      : image.image
+                                  }
+                                  width={150}
+                                  height={150}
+                                  style={{ border: "1px solid black" }}
+                                  alt={`Image ${index}`}
+                                />
+                              </div>
+                            ))
+                            
+                          ) : (
+                            <NextImage
+                              src="/private.jpg"
+                              width={150}
+                              height={150}
+                              style={{ border: "1px solid black" }}
+                              alt=""
+                            />
+                          )}
+                        </div>
+                      ) : (
                         <NextImage
-                          unoptimized
-                          key={img.email} // Ensure each NextImage has a unique key
-                          src={`data:image/jpeg;base64,${img.image}`}
-                          width={100}
-                          height={100}
-                          style={{
-                            border: "1px solid black",
-                          }}
+                          src="/female.jpeg"
+                          width={150}
+                          height={150}
+                          style={{ border: "1px solid black" }}
                           alt=""
                         />
-                      ))}
-                    {imageData.filter((img) => img.email === userInfo.email)
-                      .length === 0 && (
-                      <NextImage
-                        unoptimized
-                        src="/female.jpeg" // Set src to "/female.jpeg" if no images found
-                        width={100}
-                        height={100}
-                        style={{
-                          border: "1px solid black",
-                        }}
-                        alt=""
-                      />
-                    )}
-                  </div>
-                ) : (
-                  <div></div>
-                )}
+                      )}
+                    </div>
+                  )}
+                </Link>
               </div>
             </div>
+
+            <div className="result-line1">
+              <div className="flag-container">
+                <ReactCountryFlag
+                  countryCode={getCode(`${userInfo.aboutme_country}`)}
+                  svg
+                  title="India"
+                  className="result-line1-flag"
+                  style={{ height: "20px", width: "20px" }} // Set height and width inline
+                />
+              </div>
+              <div className="flag-container">
+                <ReactCountryFlag
+                  countryCode={getCode(`${userInfo.personal_origin}`)}
+                  svg
+                  style={{
+                    marginRight: "10px",
+                    height: "20px",
+                    width: "20px",
+                  }} // Set height and width inline
+                  title="India"
+                  className="result-line1-flag"
+                />
+              </div>
+            </div>
+
             <div className="result-right-parent-container">
               <div className="result-line1-container-search">
                 <div>{userInfo.aboutme_looking}</div>
                 <div className="active-text-search">
-                  Active:
+                  <strong>Active:</strong>
                   {timeStamp.map((timestampItem) => {
                     if (timestampItem.email === userInfo.email) {
                       return (
@@ -449,15 +555,40 @@ export default function HeartedMe() {
                   })}
                 </div>
               </div>
+
               <div className="result-line2-container-search">
-                <div>{userInfo.username},</div>
-                <div className="age-search">
-                  {calculateAge(
-                    userInfo.aboutme_year,
-                    userInfo.aboutme_month,
-                    userInfo.aboutme_day
-                  )}
+                <div className="result-line2">
+                  <Link
+                    onClick={(e) => {
+                      e.preventDefault(); // Prevent the default behavior of the link
+                      setSelectedUserInfo(userInfo);
+                      ViewBio(e, userInfo.email);
+                      router.push({
+                        pathname:
+                          "/Pagess/create/results/viewProfile/viewProfile",
+                        query: {
+                          name: JSON.stringify(userInfo),
+                        },
+                      });
+                    }}
+                    href="/Pagess/create/results/viewProfile/viewProfile"
+                    style={{ textDecoration: "none", color: "black" }}
+                  >
+                    <strong>{userInfo.username}</strong>
+                  </Link>
                 </div>
+
+                <div className="mini-seprator-search"></div>
+                <span className="result-line2-container-age">
+                  Age:
+                  <div className="age-search">
+                    {calculateAge(
+                      userInfo.aboutme_year,
+                      userInfo.aboutme_month,
+                      userInfo.aboutme_day
+                    )}
+                  </div>
+                </span>
                 <div className="mini-seprator-search"></div>
                 <div className="heart-container-search">
                   {Array.isArray(heartedEmails) ? (
@@ -481,7 +612,7 @@ export default function HeartedMe() {
                   ) : null}
                 </div>
                 <div
-                  className="heart-container-search"
+                  className="heart-container-search2"
                   onClick={(e) => {
                     setSelectedUserInfo(userInfo);
                     setShowMessage(true);
@@ -532,7 +663,7 @@ export default function HeartedMe() {
                 )}
                 {/* ^^^^^^^^^^^^^ */}
                 <div
-                  className="heart-container-search"
+                  className="heart-container-search2"
                   onClick={() => {
                     setSelectedUserInfo(userInfo);
                     setShowPrivate(true);
@@ -563,9 +694,6 @@ export default function HeartedMe() {
                           <button
                             className="send-msg-search"
                             onClick={(e) => {
-                              setMessageText(
-                                "I would like to request your Private Images"
-                              );
                               RequestPrivateImage(e, selectedUserInfo.email);
                               setShowPrivate(false);
                             }}
@@ -578,7 +706,7 @@ export default function HeartedMe() {
                   </div>
                 )}
                 <div
-                  className="heart-container-search"
+                  className="heart-container-search2"
                   onClick={() => {
                     setSelectedUserInfo(userInfo);
                     setShowBlock(true);
@@ -620,7 +748,7 @@ export default function HeartedMe() {
                   </div>
                 )}
                 <div
-                  className="heart-container-search"
+                  className="heart-container-search2"
                   onClick={(e) => {
                     setSelectedUserInfo(userInfo);
                     setShowReport(true);
@@ -670,32 +798,236 @@ export default function HeartedMe() {
                     </div>
                   </div>
                 )}
-                <div className="heart-container-search">
-                  <WaliRed />
+                <div
+                  className="heart-container-search"
+                  onClick={() => {
+                    setSelectedUserInfo(userInfo);
+                    setShowWali(true);
+                  }}
+                >
+                  {userInfo.gender}
+                  {userInfo.gender == "female" && <WaliRed />}
                 </div>
+                {showWali && (
+                  <div className="msg-container-search">
+                    <div className="msg-sub-search">
+                      <div className="msg-heading-search">
+                        <div className="msg-text-search">
+                          Request Wali Details
+                        </div>
+                        <div className="close-msg-search">
+                          <div
+                            onClick={(e) => {
+                              setShowWali(false);
+                            }}
+                          >
+                            X
+                          </div>
+                        </div>
+                      </div>
+                      <div className="divider-msg-search"></div>
+                      <div className="msg-mini-container-search">
+                        <div className="send-msg-container-search">
+                          <button
+                            className="send-msg-search"
+                            onClick={(e) => {
+                              setMessageText(
+                                "I would like to request your wali details"
+                              );
+                              RequestWali(e, selectedUserInfo.email);
+                              setShowWali(false);
+                            }}
+                          >
+                            Request
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Shows Bio Details */}
+                {viewBio && (
+                  <div className="bio-container-search">
+                    {console.log(
+                      "data found on user:",
+                      selectedUserInfo.username
+                    )}
+                    <div className="bio-sub-search">
+                      <div className="bio-heading-search">
+                        <div className="bio-text-search">Biography</div>
+                        <div className="close-bio-search">
+                          <div
+                            onClick={(e) => {
+                              setViewBio(false);
+                            }}
+                          >
+                            X
+                          </div>
+                        </div>
+                      </div>
+                      <div className="divider-bio-search"></div>
+                      <div className="bio-mini-container-search">
+                        <div className="bio-mini-text-search">
+                          A Little bit about me
+                        </div>
+                        <div className="bio-mini-text2-search">
+                          {selectedUserInfo.aboutme_about}
+                        </div>
+                      </div>
+                      <div className="bio-mini-container-search">
+                        <div className="bio-mini-text-search">
+                          What I am looking for
+                        </div>
+                        <div className="bio-mini-text2-search">
+                          {selectedUserInfo.aboutme_looking}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {/* ^^^^^^^^^^^^^ */}
               </div>
               <div className="result-line3-container-search">
-                <div className="distance-search">{userInfo.mosque}</div>
+                <div>{userInfo.distance + " Km Away"}</div>
+                {/* {userInfo.types.slice(0, 3).map((type, index) => (
+                  <div
+                    key={index}
+                    className={`result-line3 ${index}`}
+                    data-tooltip={type}
+                  >
+                    {type}
+                  </div>
+                ))} */}
+                {/* <div>
+                  {!showAll && userInfo.types.length > 3 && (
+                    <span onClick={() => handleShowAll(userInfo)}>
+                      <Arrow />
+                    </span>
+                  )}
+                </div> */}
+                {/* {showAll && selectedUserData === userInfo && (
+                  <div className="msg-container-search">
+                    <div className="msg-sub-search">
+                      <div className="msg-heading-search">
+                        <div className="msg-text-search">Types</div>
+                        <div className="close-msg-search">
+                          <div
+                            onClick={(e) => {
+                              setShowAll(false);
+                            }}
+                          >
+                            X
+                          </div>
+                        </div>
+                      </div>
+                      <div className="divider-msg-search"></div>
+                      <div className="msg-mini-container-search">
+                        <ul>
+                          {selectedUserData.types.map((type, index) => (
+                            <li key={index} className="msg-mini-text-search">
+                              {type}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                )} */}
+
+                <Link
+                  className="view-bio-search"
+                  onClick={(e) => {
+                    e.preventDefault(); // Prevent the default behavior of the link
+                    setSelectedUserInfo(userInfo);
+                    ViewBio(e, userInfo.email);
+                    router.push({
+                      pathname:
+                        "/Pagess/create/results/viewProfile/viewProfile",
+                      query: {
+                        name: JSON.stringify(userInfo),
+                      },
+                    });
+                    localStorage.setItem("turn", 0);
+                  }}
+                  href="/Pagess/create/results/viewProfile/viewProfile"
+                >
+                  View Profile
+                </Link>
               </div>
               <div className="result-line4-container-search">
-                <div>{userInfo.eduwork_profession} -</div>
-                <div className="info-search">{userInfo.religion_sector} - </div>
-                <div className="info-search">{userInfo.eduwork_subject} -</div>
-                <div className="info-search">{userInfo.personal_height} -</div>
-                <div className="info-search"> {userInfo.religion_pray}</div>
+                <div className="info-search">
+                  <i>
+                    <span className="result-line4">Sect:</span>
+                    {userInfo.religion_sector}
+                  </i>{" "}
+                </div>
+                <div className="info-search">
+                  <i>
+                    <span className="result-line4">Hijab</span>:
+                    {userInfo.religion_hijab}
+                  </i>{" "}
+                </div>
+
+                <div className="info-search">
+                  <i>
+                    <span className="result-line4">Pray</span>:
+                    {userInfo.religion_pray}
+                  </i>{" "}
+                </div>
+
+                <div className="info-search">
+                  <i>
+                    <span className="result-line4">Quran</span>:
+                    {userInfo.religon_quran}
+                  </i>{" "}
+                </div>
+
+                <div className="info-search">
+                  <i>
+                    <span className="result-line4">Religiousness</span>:
+                    {userInfo.religion_religious}
+                  </i>
+                </div>
               </div>
-              <div className="result-line5-container-search">
-                <div>{userInfo.religion_halal} -</div>
-                <div className="info-search"> {userInfo.personal_smoke} -</div>
-                <div className="info-search"> {userInfo.personal_drink} -</div>
-              </div>
-              <div className="result-line5-container-search">
-                <div> {userInfo.personal_marriage} -</div>
-                <div className="info-search">{userInfo.personal_relocate}</div>
-              </div>
-              <div className="result-line5-container-search">
-                <div>Annual Income: {userInfo.personal_income}</div>
-              </div>
+
+              <span className="result-line5-container-datas">
+                <i>
+                  <div className="result-line5-container-search">
+                    <div className="info-search">
+                      <span className="result-line5">Occupation</span>:
+                      {userInfo.eduwork_job
+                        ? userInfo.eduwork_job
+                        : "Not Specified"}
+                    </div>
+                    <div className="info-search">
+                      <span className="result-line5">Martial Status</span>:{" "}
+                      {userInfo.personal_marital}
+                    </div>
+                    <div className="info-search">
+                      <span className="result-line5">Has Children</span>:{" "}
+                      {userInfo.personal_children2}
+                    </div>
+                    <div className="info-search">
+                      {" "}
+                      <span className="result-line5">Build</span>:
+                      {userInfo.personal_build}{" "}
+                    </div>
+
+                    <div>
+                      <span className="result-line5">Height</span>:{" "}
+                      {userInfo.personal_height}{" "}
+                    </div>
+
+                    <div className="">
+                      <div>
+                        <span className="result-line5">Income</span>:{" "}
+                        {userInfo.personal_income}
+                      </div>
+                    </div>
+                  </div>
+                </i>
+              </span>
             </div>
           </div>
         ))}

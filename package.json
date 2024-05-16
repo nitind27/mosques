@@ -39,6 +39,7 @@
     "react-dom": "^18",
     "react-i18next": "^13.3.1",
     "react-select": "^5.8.0",
+    "react-simple-image-slider": "^2.4.1",
     "serverless-mysql": "^1.5.5",
     "socket.io": "^4.7.2",
     "socket.io-client": "^4.7.2",

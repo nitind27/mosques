@@ -1,4 +1,5 @@
 import { useState, useEffect, useContext, use } from "react";
+
 import { useRouter } from "next/navigation";
 import { AppContext } from "../../AppContext";
 import Camera from "../../../../../public/camerasvg";
@@ -13,6 +14,7 @@ import Link from "next/link";
 import Arrow from "../../../../../public/arrow";
 import ReactCountryFlag from "react-country-flag";
 import { countries } from "country-data";
+import ProfileImages from "./ProfileImages";
 export default function SearchUserData() {
   const [data, setData] = useState([]);
   //Setting the Current User's Coordinates
@@ -20,6 +22,7 @@ export default function SearchUserData() {
   const [cLocation, setcLocation] = useState(null);
 
   let locationSet = false;
+  const [requestCheck, setRequestCheck] = useState([]);
   const [email, setEmail] = useState("");
   const [filteredData, setFilteredData] = useState([]);
   console.log("dad0", filteredData);
@@ -43,6 +46,8 @@ export default function SearchUserData() {
   const [emailProfile, setEmailProfile] = useState("");
   const [loaded, setLoaded] = useState(false);
   const [imageData, setImageData] = useState(null);
+  console.log("imgfafsdaf", imageData);
+
   //-----For Fav icon-----
   const [heartClicked, setHeartClicked] = useState(false);
   const [heartedEmails, setHeartedEmails] = useState([]);
@@ -63,8 +68,6 @@ export default function SearchUserData() {
     setShowAll(!showAll);
     setSelectedUserData(userInfo);
   };
-
-  console.log("mypic", imageData);
 
   const ethnicities_existing = [
     "asian",
@@ -217,7 +220,6 @@ export default function SearchUserData() {
         const filteredData = dataChanged.filter(
           (user) => !data3.some((item) => item.sender_email === user.email)
         );
-        console.log("FilteredData fadsfasdf,", filteredData);
 
         setData(filteredData);
         showMap();
@@ -576,11 +578,12 @@ export default function SearchUserData() {
 
   //----------------For profile image------------------
   useEffect(() => {
-    var getImg = async () => {
+    const getImages = async () => {
       try {
         const emails = data.map((user) => user.email);
-        console.log("get image started", emails);
-        const res = await fetch("/api/createAcc/getProfileImgBulk", {
+
+        // Fetch images from the first endpoint
+        const res1 = await fetch("/api/createAcc/getProfileImgBulk", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -589,20 +592,37 @@ export default function SearchUserData() {
             data: emails,
           }),
         });
-        const data2 = await res.json();
-        if (data2.error) {
-          setImageUrl(null);
-        } else {
-          console.log("Image URL: ", data2.image);
-          setImageData(data2.image);
+        const data1 = await res1.json();
+
+        // Fetch images from the second endpoint
+        const res2 = await fetch("/api/createAcc/getProfileImgPublicBulk", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            data: emails,
+          }),
+        });
+        const data2 = await res2.json();
+
+        // Check if either request failed
+        if (data1.error || data2.error) {
           setLoaded(true);
+          return;
         }
-        setLoading(true);
+
+        // Combine image data from both endpoints
+        const imageData = [data1.image, data2.images];
+        // Set the image data and mark as loaded
+        setImageData(imageData);
+        setLoaded(true);
       } catch (error) {
-        console.log("Error on getting image: ", error);
+        console.error("Error fetching images:", error);
       }
     };
-    getImg();
+
+    getImages();
   }, [data]);
 
   //--------------------^^^^^^^^^^^^^-------------------
@@ -784,6 +804,23 @@ export default function SearchUserData() {
       return `${differenceDays} day${differenceDays > 1 ? "s" : ""} ago`;
     }
   };
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const res = await fetch("/api/interest/requestCheck");
+        if (!res.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await res.json();
+        setRequestCheck(data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    }
+    fetchData();
+  }, []);
+
   return (
     <div>
       <div className="bottom-container-search">
@@ -806,44 +843,78 @@ export default function SearchUserData() {
                   }}
                   href="/Pagess/create/results/viewProfile/viewProfile"
                 >
-                  {loaded ? (
+                  {loaded && (
                     <div>
-                      {imageData
-                        .filter((img) => img.email === userInfo.email)
-                        .map((img) => (
-                          <NextImage
-                            unoptimized
-                            key={img.email} // Ensure each NextImage has a unique key
-                            src={`data:image/jpeg;base64,${img.image}`}
-                            width={100}
-                            height={100}
-                            style={{
-                              border: "1px solid black",
-                              width: "150px",
-                              height: "150px",
-                            }}
-                            alt=""
-                          />
-                        ))}
+                      {imageData.some(
+                        (images) =>
+                          images.filter((img) => img.email === userInfo.email)
+                            .length > 0
+                      ) ? (
+                        <div>
+                          {userInfo.gender !== "female" ? (
+                            imageData
+                              .flat()
+                              .filter((img) => img.email === userInfo.email)
+                              .map((image, index) => (
+                                <div key={index}>
+                                  <NextImage
+                                    key={index}
+                                    src={
+                                      index === 0
+                                        ? `data:image/jpeg;base64,${image.image}`
+                                        : image.image
+                                    }
+                                    width={150}
+                                    height={150}
+                                    style={{ border: "1px solid black" }}
+                                    alt={`Image ${index}`}
+                                  />
+                                </div>
+                              ))
+                          ) :   requestCheck.some(
+                            request => (request.sender_email === userInfo.email || userInfo.email === email) && request.status === "approved"
+                          ) ? (
 
-                      {imageData.filter((img) => img.email === userInfo.email)
-                        .length === 0 && (
+                            imageData
+                            .flat()
+                            .filter((img) => img.email === userInfo.email)
+                            .map((image, index) => (
+                              <div key={index}>
+                                <NextImage
+                                  key={index}
+                                  src={
+                                    index === 0
+                                      ? `data:image/jpeg;base64,${image.image}`
+                                      : image.image
+                                  }
+                                  width={150}
+                                  height={150}
+                                  style={{ border: "1px solid black" }}
+                                  alt={`Image ${index}`}
+                                />
+                              </div>
+                            ))
+                            
+                          ) : (
+                            <NextImage
+                              src="/private.jpg"
+                              width={150}
+                              height={150}
+                              style={{ border: "1px solid black" }}
+                              alt=""
+                            />
+                          )}
+                        </div>
+                      ) : (
                         <NextImage
-                          unoptimized
-                          src="/female.jpeg" // Set src to "/female.jpeg" if no images found
-                          width={100}
-                          height={100}
-                          style={{
-                            border: "1px solid black",
-                            width: "150px",
-                            height: "150px",
-                          }}
+                          src="/female.jpeg"
+                          width={150}
+                          height={150}
+                          style={{ border: "1px solid black" }}
                           alt=""
                         />
                       )}
                     </div>
-                  ) : (
-                    <div></div>
                   )}
                 </Link>
               </div>
@@ -878,7 +949,7 @@ export default function SearchUserData() {
               <div className="result-line1-container-search">
                 <div>{userInfo.aboutme_looking}</div>
                 <div className="active-text-search">
-                 <strong>Active:</strong> 
+                  <strong>Active:</strong>
                   {timeStamp.map((timestampItem) => {
                     if (timestampItem.email === userInfo.email) {
                       return (
@@ -1141,7 +1212,8 @@ export default function SearchUserData() {
                     setShowWali(true);
                   }}
                 >
-                  {userInfo.gender !== "male" ? "" : <WaliRed />}
+                  {userInfo.gender}
+                  {userInfo.gender == "female" && <WaliRed />}
                 </div>
                 {showWali && (
                   <div className="msg-container-search">
@@ -1224,7 +1296,7 @@ export default function SearchUserData() {
                 {/* ^^^^^^^^^^^^^ */}
               </div>
               <div className="result-line3-container-search">
-              <div>{userInfo.distance + " Km Away"}</div>
+                <div>{userInfo.distance + " Km Away"}</div>
                 {userInfo.types.slice(0, 3).map((type, index) => (
                   <div
                     key={index}

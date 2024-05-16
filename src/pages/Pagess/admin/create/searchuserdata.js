@@ -893,14 +893,14 @@ export default function SearchUserData() {
               </div>
               <div className="result-line1-container-search">
                 <div>{userInfo.aboutme_looking}</div>
-                <div className="active-text-search">
+                <div className="active-text-search-stop">
                   <Stop />
                 </div>
               </div>
 
               <div className="result-line1-container-search">
                 <div>{userInfo.aboutme_looking}</div>
-                <div className="active-text-search">
+                <div className="active-text-search-envelope">
                   <Envelope />
                 </div>
               </div>

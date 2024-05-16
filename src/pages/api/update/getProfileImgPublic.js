@@ -17,10 +17,7 @@ export default async function getProfileImgPublic(req, res) {
       // Iterate through the result set
       for (const row of result.rows) {
         try {
-          // let imageBase64 = Buffer.from(row.picture);
-          // imageBase64 = imageBase64.toString("utf-8");
-          // imageBase64 = Buffer.from(JSON.parse(imageBase64).data);
-          // imageBase64 = imageBase64.toString("base64");
+
           const imageBase64 = row.picture.toString("base64");
 
           const backupBase64 = row.backup.toString("base64");
