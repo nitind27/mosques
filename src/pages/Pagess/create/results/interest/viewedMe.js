@@ -20,6 +20,7 @@ export default function ViewedMe() {
   const [messageText, setMessageText] = useState("");
   const [heartClicked, setHeartClicked] = useState(false);
   const [showReport, setShowReport] = useState(false);
+  const [counts, setCounts] = useState([]);
   const [heartedEmails, setHeartedEmails] = useState([]);
   const [showPrivate, setShowPrivate] = useState(false);
   //-----For blocking user---------
@@ -27,6 +28,7 @@ export default function ViewedMe() {
   const [blockStart, setBlockStart] = useState(0);
   //------Time Stamps---------
   const [timeStamp, setTimeStamp] = useState([]);
+  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const { getCode, getName } = require("country-list");
 
@@ -129,8 +131,8 @@ export default function ViewedMe() {
 
   //-------------^^^^^^^^^^^^^^^^^^^^------------------
 
-   //----------------For profile image------------------
-   useEffect(() => {
+  //----------------For profile image------------------
+  useEffect(() => {
     const getImages = async () => {
       try {
         const emails = data.map((user) => user.email);
@@ -181,6 +183,8 @@ export default function ViewedMe() {
 
   //--------------------^^^^^^^^^^^^^-------------------
 
+
+  
   //-------------Function to calculate age------------------
   function calculateAge(year, month, day) {
     const dateOfBirth = `${year}-${month}-${day}`;
@@ -412,11 +416,53 @@ export default function ViewedMe() {
   };
 
   //-----------------^^^^^^^^^^^^^^----------------
+
+  // count data
+  useEffect(() => {
+    // Fetch email from localStorage
+    const userEmail = localStorage.getItem("email");
+    setEmail(userEmail);
+
+    async function fetchData() {
+      try {
+        const res = await fetch("/api/interest/viewsCount", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email: userEmail }),
+        });
+        if (!res.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await res.json();
+        setCounts(data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    }
+    fetchData();
+  }, []);
+
   return (
     <div>
       <div className="bottom-container-search">
         {data.map((userInfo) => (
-          <div key={userInfo.id} className="result-parent-container-search">
+          <div
+            key={userInfo.id}
+            className="result-parent-container-search"
+            style={{
+              backgroundColor: counts.some(
+                (count) =>
+                  count.viewer_email === userInfo.email && count.views === 0
+              )
+                ? "#ededed"
+                : "white",
+            }}
+          >
+            {/* Your content here */}
+
+         
             <div className="result-img-parent-search">
               <div className="img-container-search">
                 <Link
@@ -462,30 +508,31 @@ export default function ViewedMe() {
                                   />
                                 </div>
                               ))
-                          ) :   requestCheck.some(
-                            request => (request.sender_email === userInfo.email || userInfo.email === email) && request.status === "approved"
-                          ) ? (
-
+                          ) : requestCheck.some(
+                              (request) =>
+                                (request.sender_email === userInfo.email ||
+                                  userInfo.email === email) &&
+                                request.status === "approved"
+                            ) ? (
                             imageData
-                            .flat()
-                            .filter((img) => img.email === userInfo.email)
-                            .map((image, index) => (
-                              <div key={index}>
-                                <NextImage
-                                  key={index}
-                                  src={
-                                    index === 0
-                                      ? `data:image/jpeg;base64,${image.image}`
-                                      : image.image
-                                  }
-                                  width={150}
-                                  height={150}
-                                  style={{ border: "1px solid black" }}
-                                  alt={`Image ${index}`}
-                                />
-                              </div>
-                            ))
-                            
+                              .flat()
+                              .filter((img) => img.email === userInfo.email)
+                              .map((image, index) => (
+                                <div key={index}>
+                                  <NextImage
+                                    key={index}
+                                    src={
+                                      index === 0
+                                        ? `data:image/jpeg;base64,${image.image}`
+                                        : image.image
+                                    }
+                                    width={150}
+                                    height={150}
+                                    style={{ border: "1px solid black" }}
+                                    alt={`Image ${index}`}
+                                  />
+                                </div>
+                              ))
                           ) : (
                             <NextImage
                               src="/private.jpg"

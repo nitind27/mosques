@@ -1,11 +1,15 @@
 .option-section-interest {
   display: flex;
-  margin-top: 5%;
-  background-color: white;
-  height: 40px;
-  align-items: center;
-}
+  margin-left: 1%;
+  width: 100%;
 
+  font-size: 25px;
+
+  padding: 10px;
+  font-weight: bold;
+  font-style: italic;
+
+}
 
 @media (max-width: 750px) {
   .container-view-interest {
@@ -27,11 +31,7 @@
   }
 }
 
-/*Left Side*/
-.container-view-interest {
-
-}
-.interest-container{
+.interest-container {
   margin: 100px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
   background-color: white;
@@ -40,15 +40,30 @@
 }
 .left-container-view-interest {
   width: 50%;
+  display: flex;
+  font-weight: bold;
+  font-style: italic;
 }
 .view-text-interest {
   margin-left: 2%;
-  font-size: 30px;
+  font-size: 25px;
+  padding: 10px;
+}
+.view-text-interest4 {
+  margin-left: 85px;
+
+  font-size: 25px;
   padding: 10px;
 }
 .divider-interest {
+  border-bottom: 1px solid #b52d3b;
+}
+.divider-ver {
+  border-left: 6px solid #b52d3b;
+  height: 100px;
+  margin-left: 200px;
+  margin-top: 20px;
   width: 1px;
-  background-color: #cacaca;
 }
 
 #heart {
@@ -69,7 +84,7 @@
 }
 #blackHeart {
   width: 20px;
-  
+
   background: radial-gradient(circle at 60% 65%, black 64%, transparent 65%) top
       left,
     radial-gradient(circle at 40% 65%, black 64%, transparent 65%) top right,
@@ -79,22 +94,25 @@
   background-repeat: no-repeat;
   display: inline-block;
 }
-#blackHeart:hover{
+#blackHeart:hover {
+  width: 20px;
 
-    width: 20px;
-    
-    background: radial-gradient(circle at 60% 65%, red 64%, transparent 65%) top
-        left,
-      radial-gradient(circle at 40% 65%, red 64%, transparent 65%) top right,
-      linear-gradient(to bottom left, red 43%, transparent 43%) bottom left,
-      linear-gradient(to bottom right, red 43%, transparent 43%) bottom right;
-    background-size: 50% 50%;
-    background-repeat: no-repeat;
-    display: inline-block;
-  
+  background: radial-gradient(circle at 60% 65%, red 64%, transparent 65%) top
+      left,
+    radial-gradient(circle at 40% 65%, red 64%, transparent 65%) top right,
+    linear-gradient(to bottom left, red 43%, transparent 43%) bottom left,
+    linear-gradient(to bottom right, red 43%, transparent 43%) bottom right;
+  background-size: 50% 50%;
+  background-repeat: no-repeat;
+  display: inline-block;
 }
 #blackHeart::before {
   content: "";
   display: block;
   padding-top: 100%;
 }
+
+.option-2-interest {
+  margin-left: 150px;
+}
+

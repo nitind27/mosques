@@ -29,6 +29,20 @@
   margin-left: 20px;
   cursor: pointer;
 }
+
+.square {
+  display: flex;
+  color: #b52d3b;
+  font-style: italic;
+
+}
+
+/* Adjust spacing between icon and count */
+.square > * {
+  margin-right: -28px; /* Adjust as needed */
+ 
+}
+
 .account-navResult {
   margin-left: auto;
   margin-right: 80px;

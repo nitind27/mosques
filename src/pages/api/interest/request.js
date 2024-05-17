@@ -5,11 +5,11 @@ const messageText = "Hi, I am requesting to see your profile pictures, please ki
 
 export default async function Request(req, res) {
   try {
-    //Get email from body
+    // Get email from body
     const requested = req.body.viewed;
     const request = req.body.viewer;
 
-    //Check if email is valid
+    // Check if email is valid
     if (!request || requested === "") {
       return res.status(400).json({ error: "Email is required" });
     }
@@ -25,10 +25,14 @@ export default async function Request(req, res) {
         )
       `;
 
-      // Insert message into the messages table
+      // Insert message into the messages table if status is NULL
       const insertMessage = await sql`
         INSERT INTO messages (sender_email, receiver_email, message_text)
-        VALUES (${request}, ${requested}, ${messageText})
+        SELECT ${request}, ${requested}, ${messageText}
+        WHERE EXISTS (
+          SELECT 1 FROM requests
+          WHERE sender_email = ${request} AND receiver_email = ${requested} AND status IS NULL
+        )
       `;
 
       res.json("Requested");

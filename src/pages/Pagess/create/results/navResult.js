@@ -17,6 +17,8 @@ export default function ResultsNav() {
   const [logout, setLogout] = useState(false);
   const [selected, setSelected] = useState("search");
   const { push } = useRouter();
+  const [counts, setCounts] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   //------------------Retrieves data----------------
   useEffect(() => {
@@ -54,7 +56,76 @@ export default function ResultsNav() {
     fetchData();
   }, []);
   //------------------^^^^^^^^^^^^^^^----------------
+  // count data
+  useEffect(() => {
+    // Fetch email from localStorage
+    const userEmail = localStorage.getItem("email");
+    setEmail(userEmail);
 
+    async function fetchData() {
+      try {
+        const res = await fetch("/api/interest/viewsCount", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email: userEmail }),
+        });
+        if (!res.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await res.json();
+        setCounts(data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    }
+    fetchData();
+  }, []);
+
+  //  update count data
+  const handleUpdateStatus = async () => {
+    setIsLoading(true);
+
+    try {
+      // Retrieve email from localStorage
+      const email = localStorage.getItem("email");
+
+      // Check if email is available
+      if (!email) {
+        throw new Error("Email not found in localStorage");
+      }
+
+      // Mock API request - replace with your actual logic
+      const response = await fetch("/api/interest/setCount", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, user_status: 1 }), // Fixed value for user_status
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      console.log(response);
+    } catch (error) {
+      console.error("Error updating user status:", error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Mock function to update user status - replace with actual API call
+  const updateStatus = async (email, status) => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        // Simulate success
+        resolve({ success: true, message: "User status updated successfully" });
+      }, 1000); // Simulate 1 second delay
+    });
+  };
   //------------------Shift to messages----------------
   const shiftToMessages = () => {
     // push("/Pagess/create/results/messages/messages");
@@ -155,22 +226,25 @@ export default function ResultsNav() {
               <MessageIcon />
             )}
           </div>
+
           <div
             className="message-navResult"
             onClick={() => {
               localStorage.setItem("turn", 0);
-
               shiftToInterest();
               changeNavOption("interest");
             }}
           >
-            {selected === "interest" ? (
-              <>
-                <RedHeartIcon />
-              </>
-            ) : (
-              <HeartIcon />
-            )}
+            <div className="square" onClick={handleUpdateStatus}>
+              {selected === "interest" ? (
+                <>
+                  <RedHeartIcon />
+                </>
+              ) : (
+                <HeartIcon />
+              )}
+              {counts.length}
+            </div>
           </div>
         </div>
         <div className="account-navResult" onClick={() => setLogout(!logout)}>
