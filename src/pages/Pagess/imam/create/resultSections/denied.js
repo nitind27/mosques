@@ -319,7 +319,7 @@ export default function Denied() {
                 href="/Pagess/create/results/viewProfile/viewProfile"
                 style={{ textDecoration: "none", color: "black" }}
               >
-                <strong>{userInfo.username}</strong>
+                <strong>{userInfo.email}</strong>
       
               </Link>
             </div>

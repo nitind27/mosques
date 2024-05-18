@@ -24,6 +24,7 @@ export default function MessageHome() {
     []
   );
   const [checkBlock, setCheckBlock] = useState([]);
+  const [email, setEmail] = useState("");
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [onlineStatus, setOnlineStatus] = useState("Offline");
   const [message, setMessage] = useState(""); //Message to send
@@ -398,6 +399,7 @@ export default function MessageHome() {
       if (email1 === "" || !email1 || email1 === null) {
         return;
       }
+      setEmail(email1);
       try {
         const res = await fetch("/api/message/getSingleUser", {
           method: "POST",
@@ -537,7 +539,6 @@ export default function MessageHome() {
     imageRefs.current[index] = imageRef;
   };
 
-
   //  check block data
   useEffect(() => {
     async function fetchData() {
@@ -594,7 +595,7 @@ export default function MessageHome() {
                 <div className="name-left-live">For {username}</div>
               </div>
             </div>
-           {/* <div>
+            {/* <div>
    
       {checkBlock.length === 0 ? (
       <></>
@@ -608,6 +609,7 @@ export default function MessageHome() {
         </ul>
       )}
     </div>*/}
+
             <div className="body-left-container-live">
               {/* Mapping username for left pane */}
               {images.map((image, index) => (
@@ -631,7 +633,10 @@ export default function MessageHome() {
                         }}
                       ></canvas>
                       {requestCheck.some(
-                        (request) => request.status === "approved"
+                        (request) =>
+                          request.sender_email === email &&
+                          request.receiver_email === image.email &&
+                          request.status === "approved"
                       ) ? (
                         <img
                           ref={(ref) => (imageRefs.current[index] = ref)}
@@ -668,10 +673,9 @@ export default function MessageHome() {
                   )}
                 </div>
               ))}
-              {/* Mapping username for left pane */}
             </div>
           </div>
-          {/* Show default screen if messages not open*/}
+
           {defaultScreen ? (
             <div className="default-container-live">
               <div>Messages Will Appear Here</div>
@@ -692,7 +696,10 @@ export default function MessageHome() {
                         }}
                       ></canvas>
                       {requestCheck.some(
-                        (request) => request.status === "approved"
+                        (request) =>
+                          request.sender_email === email &&
+                          request.receiver_email === emailFound &&
+                          request.status === "approved"
                       ) ? (
                         <img
                           ref={imageRef2}

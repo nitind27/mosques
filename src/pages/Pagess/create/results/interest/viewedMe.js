@@ -444,9 +444,47 @@ export default function ViewedMe() {
     fetchData();
   }, []);
 
+
+
+
+  
+  //  update count data
+  const handleUpdateStatus = async () => {
+    // setIsLoading(true);
+
+    try {
+      // Retrieve email from localStorage
+      const email = localStorage.getItem("email");
+
+      // Check if email is available
+      if (!email) {
+        throw new Error("Email not found in localStorage");
+      }
+
+      // Mock API request - replace with your actual logic
+      const response = await fetch("/api/interest/setCount", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, user_status: 1 }), // Fixed value for user_status
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      console.log(response);
+    } catch (error) {
+      console.error("Error updating user status:", error.message);
+    } finally {
+      // setIsLoading(false);
+    }
+  };
+
   return (
     <div>
-      <div className="bottom-container-search">
+      <div className="bottom-container-search" onMouseEnter={handleUpdateStatus}>
         {data.map((userInfo) => (
           <div
             key={userInfo.id}

@@ -15,10 +15,16 @@ export default async function GetInfoAcc(req, res) {
     }
 
     const result = await sql`
-    SELECT sender_email, receiver_email
-    FROM messages
-    WHERE sender_email = ${user} OR receiver_email = ${user};
-`;
+    SELECT m.sender_email, m.receiver_email
+    FROM messages m
+    LEFT JOIN block b
+    ON (m.sender_email = b.sender_email AND m.receiver_email = b.receiver_email)
+       OR (m.sender_email = b.receiver_email AND m.receiver_email = b.sender_email)
+    WHERE (m.sender_email = ${user} OR m.receiver_email = ${user})
+      AND b.sender_email IS NULL
+      AND b.receiver_email IS NULL;
+    `;
+    
     const uniqueEmails = [];
 
     result.rows.forEach((row) => {

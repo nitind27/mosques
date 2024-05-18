@@ -53,7 +53,7 @@ export default function AdminIn() {
       localStorage.setItem("email", msg);
       localStorage.setItem("username", username);
       console.log("token", token);
-      push("/Pagess/admin/messagesAdmin");
+      push("/Pagess/admin/adminResult");
     }
   };
   return (

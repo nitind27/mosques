@@ -21,6 +21,8 @@
   margin-top: 25px;
  font-weight: bold;
   border-bottom: 1px solid #b52d3b;
+  width: 100%;
+  overflow: auto;
  
 }
 .verify-title-imamResult {
@@ -116,4 +118,11 @@
   font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
   font-weight: bold;
   font-size: 20px;
+/* }
+@media(max-width:767px){
+.verify-title-container-imamResult {
+  min-width: 400px;
+  overflow: auto !important;
+ 
+} */
 }

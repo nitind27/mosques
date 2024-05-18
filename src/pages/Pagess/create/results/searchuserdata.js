@@ -17,6 +17,7 @@ import Arrow from "../../../../../public/arrow";
 import ReactCountryFlag from "react-country-flag";
 import { countries } from "country-data";
 import ProfileImages from "./ProfileImages";
+import { ImageTwoTone } from "@mui/icons-material";
 export default function SearchUserData() {
   const [data, setData] = useState([]);
   //Setting the Current User's Coordinates
@@ -837,7 +838,7 @@ export default function SearchUserData() {
       userInfo.gender === "female" &&
       requestCheck.some(
         (request) =>
-          (request.sender_email === userInfo.email ||
+          (request.receiver_email === userInfo.email ||
             userInfo.email === email) &&
           request.status === "approved"
       );
@@ -879,7 +880,8 @@ export default function SearchUserData() {
           showNavs={true}
           navMargin={-5}
           navSize={30}
-      color={'red'}
+          color={"red"}
+          navStyle={ImageTwoTone}
         />
       </div>
     );
@@ -1198,7 +1200,7 @@ export default function SearchUserData() {
                     setShowWali(true);
                   }}
                 >
-                  {userInfo.gender}
+                
                   {userInfo.gender == "female" && <WaliRed />}
                 </div>
                 {showWali && (
