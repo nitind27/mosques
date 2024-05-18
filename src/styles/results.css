@@ -1192,3 +1192,28 @@ margin-top: 50px;
   gap: 6px; /* New gap value */
 }
 
+
+.image-slider-container {
+  position: relative;
+  width: 150px;
+  height: 150px;
+
+}
+.image-slider-container:before{
+  margin-left:50px;
+}
+
+/* Customize the navigation buttons */
+.image-slider-container .rsis-nav-left,
+.image-slider-container .rsis-nav-right {
+  background-color: rgba(0, 0, 0, 0.5); /* Example background color */
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.image-slider-container .rsis-nav-left {
+  left: 10px; /* Adjust left margin */
+}

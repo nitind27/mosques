@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext, use } from "react";
 import ImageSlider from "react-simple-image-slider";
-import 'react-slideshow-image/dist/styles.css'
+import "react-slideshow-image/dist/styles.css";
 
 import { useRouter } from "next/navigation";
 import { AppContext } from "../../AppContext";
@@ -871,16 +871,17 @@ export default function SearchUserData() {
 
     return (
       <div className="image-slider-container">
-      <ImageSlider
-        width={150}
-        height={150}
-        images={userImages}
-        showBullets={false}
-        showNavs={true}
-        className="slider-with-margin"
-        
-      />
-    </div>
+        <ImageSlider
+          width={150}
+          height={150}
+          images={userImages}
+          showBullets={false}
+          showNavs={true}
+          navMargin={-5}
+          navSize={30}
+      color={'red'}
+        />
+      </div>
     );
   };
 

@@ -23,6 +23,7 @@ export default function MessageHome() {
   const [filteredAndSortedMessages, setFilteredAndSortedMessages] = useState(
     []
   );
+  const [checkBlock, setCheckBlock] = useState([]);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [onlineStatus, setOnlineStatus] = useState("Offline");
   const [message, setMessage] = useState(""); //Message to send
@@ -536,6 +537,24 @@ export default function MessageHome() {
     imageRefs.current[index] = imageRef;
   };
 
+
+  //  check block data
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const res = await fetch("/api/interest/checkBlock");
+        if (!res.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await res.json();
+        setCheckBlock(data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    }
+    fetchData();
+  }, []);
+
   return (
     <div>
       <div className="parent-live">
@@ -575,7 +594,20 @@ export default function MessageHome() {
                 <div className="name-left-live">For {username}</div>
               </div>
             </div>
-
+           {/* <div>
+   
+      {checkBlock.length === 0 ? (
+      <></>
+      ) : (
+        <ul>
+          {checkBlock.map((user, index) => (
+            <li key={index}>
+             <li>{user.sender_email}{}</li>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>*/}
             <div className="body-left-container-live">
               {/* Mapping username for left pane */}
               {images.map((image, index) => (
@@ -627,7 +659,7 @@ export default function MessageHome() {
                           onLoad={() => handleImageRefLoaded(index)}
                         />
                       )}
-                      <div className="name-user-live">{image.username}</div>
+                      <div className="name-user-live">{image.email}</div>
                     </div>
                   ) : (
                     <div className="loader">
