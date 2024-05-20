@@ -893,6 +893,8 @@ export default function SearchUserData() {
         {filteredData.map((userInfo) => (
           <div key={userInfo.id} className="result-parent-container-search">
             <div className="result-img-parent-search">
+            <div className="result-main-img">
+
               <div className="img-container-search">
                 {loaded ? (
                   renderUserImages(userInfo)
@@ -1424,6 +1426,7 @@ export default function SearchUserData() {
                 </i>
               </span>
             </div>
+          </div>
           </div>
         ))}
       </div>

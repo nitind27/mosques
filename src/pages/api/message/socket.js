@@ -51,7 +51,7 @@ export default async function SocketHandler(req, res) {
       }
       try {
         const result =
-          await sql`SELECT * FROM messages WHERE receiver_email = ${email};`;
+          await sql`SELECT * FROM messages WHERE receiver_email LIKE ${email};`;
         io.emit("getRecievedMessages", result.rows, email);
       } catch (error) {
         console.log("Error cought on getRecievedMessages:", error);
@@ -67,7 +67,7 @@ export default async function SocketHandler(req, res) {
       try {
         console.log("trying");
         const result =
-          await sql`SELECT * FROM messages WHERE sender_email = ${email};`;
+          await sql`SELECT * FROM messages WHERE sender_email LIKE ${email};`;
         console.log("email to send back: ", email);
         io.emit("getSentMessages", result.rows, email);
       } catch (error) {
@@ -85,7 +85,7 @@ export default async function SocketHandler(req, res) {
       try {
         console.log("trying");
         const result =
-          await sql`SELECT * FROM messages WHERE sender_email = ${email};`;
+          await sql`SELECT * FROM messages WHERE sender_email LIKE ${email};`;
         console.log("sent messages to send back: ", result.rows);
         io.emit("getSentMessagesAdmin", result.rows, email);
       } catch (error) {
@@ -101,7 +101,13 @@ export default async function SocketHandler(req, res) {
         return "email not recieved on backend";
       }
       try {
-        const result = await sql`SELECT * FROM reports;`;
+        const result = await sql`SELECT message_text, sender_email, reported_email as receiver_email, timestamp
+        FROM reports
+        
+        UNION
+        
+        SELECT message_text, sender_email, receiver_email, timestamp
+        FROM messages;`;
         console.log("recieved messages to send back: ", result.rows);
         io.emit("getRecievedMessagesAdmin", result.rows, email);
       } catch (error) {
@@ -117,7 +123,7 @@ export default async function SocketHandler(req, res) {
       }
       try {
         const result =
-          await sql`SELECT * FROM messages WHERE receiver_email = ${email3};`;
+          await sql`SELECT * FROM messages WHERE receiver_email LIKE ${email3};`;
 
         for (const user of users) {
           if (user.email3 === email3) {

@@ -48,12 +48,7 @@
   margin-right: 10px;
   background-color: black;
 }
-.btn-container-awaiting {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-}
+
 .btn-awaiting {
   /* background-color: green; */
   padding: 5px;
@@ -125,4 +120,23 @@
   overflow: auto !important;
  
 } */
+}
+
+@media(max-width:1199px){
+  .btn-container-awaiting {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row !important;
+  }
+}
+@media (max-width: 560px) {
+  .imam-profiles-data {
+      margin: 0px !important;
+  }
+}
+@media (max-width: 375px) {
+    .imam-profiles-head {
+        gap: 10px;
+    }
 }

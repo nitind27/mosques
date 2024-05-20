@@ -10,7 +10,7 @@ export default async function SendMessage(req, res) {
     console.log("Message Content: ", req.body);
     const content = req.body;
 
-    console.log("content: ", content);
+    console.log("content fsf: ", content);
     if (!content) {
       console.log("content empty");
       res
@@ -24,7 +24,7 @@ export default async function SendMessage(req, res) {
 
     const result =
       await sql`INSERT INTO messages (sender_email, receiver_email, message_text) VALUES (${senderEmail}, ${receiverEmail}, ${messageText});`;
-
+    console.log("datares", result);
     res.json({ message: "Success" });
   } catch (error) {
     console.log(error);

@@ -21,7 +21,7 @@ export default function ImamMessages() {
   );
   const [message, setMessage] = useState(""); //Message to send
   const [selectedUser, setSelectedUser] = useState(""); //Selected user to display messages
-
+  const [onlineStatus, setOnlineStatus] = useState("Offline");
   useEffect(() => {
     const socketInitializer = async () => {
       const username = localStorage.getItem("username");
@@ -50,6 +50,7 @@ export default function ImamMessages() {
 
       newSocket.on("getRecievedMessagesAdmin", (arr, email1) => {
         let em = localStorage.getItem("email");
+        console.log("heklodsaf ", arr);
         if (email1 === em) {
           setRecievedMessages(arr);
         }
@@ -228,6 +229,7 @@ export default function ImamMessages() {
     console.log("filteredAndSortedMessages", filteredAndSortedMessages);
     setFilteredAndSortedMessages(filteredAndSortedMessages);
   }, [allMessages, emailFound]);
+
   //--------------------^^^^^^^^^^--------------------
 
   //------------------Send message--------------------
@@ -236,6 +238,10 @@ export default function ImamMessages() {
       console.log("socket not found");
       return;
     }
+    if (message === "") {
+      return;
+    }
+
     const emailCurrent = localStorage.getItem("email");
     const res = await fetch("/api/message/sendMessage", {
       method: "POST",
@@ -398,7 +404,13 @@ export default function ImamMessages() {
                       placeholder="Enter a message here.."
                       onChange={(e) => setMessage(e.target.value)}
                     />
-                    <button className="send-msg-live" onClick={handleMessage}>
+                    <button
+                      className="send-msg-live"
+                      onClick={() => {
+                        handleMessage();
+                        setMessage("");
+                      }}
+                    >
                       <MessageSend />
                     </button>
                   </div>

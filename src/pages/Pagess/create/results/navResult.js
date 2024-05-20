@@ -209,7 +209,7 @@ export default function ResultsNav() {
               ) : (
                 <HeartIcon />
               )}
-              {counts.length}
+              {counts.length == 0 ? "" : counts.length}
             </div>
           </div>
         </div>

@@ -16,11 +16,15 @@ export default async function HeartedByMe(req, res) {
     //Get All emails that the user has hearted
     try {
       const getEmails = await sql`
-      SELECT ca.*
-      FROM heart h
-      JOIN createAcc ca ON h.hearted_email = ca.email
-      WHERE h.hearter_email = ${email};`;
-
+      SELECT ca.*, 
+      CONCAT('[', STRING_AGG(CONCAT('[', m.latitude, ',', m.longitude, ',\"', m.type, '\"]'), ','), ']') AS locations, 
+      ARRAY_AGG(m.type) AS types
+FROM heart h
+JOIN createAcc ca ON h.hearted_email = ca.email
+JOIN mosques m ON ca.email = m.email
+WHERE h.hearter_email = ${email}
+GROUP BY ca.email;
+`;
       res.json({ data: getEmails.rows });
     } catch (error) {
       console.log("Error while inserting into verify table", error);

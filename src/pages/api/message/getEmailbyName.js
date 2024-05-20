@@ -15,7 +15,7 @@ export default async function GetInfoAcc(req, res) {
     }
 
     const result =
-      await sql`SELECT email FROM createAcc WHERE username = ${user};`;
+      await sql`SELECT email FROM createAcc WHERE username = ${user} UNION SELECT email FROM admin WHERE username = ${user};`;
     console.log("result for request:", result.rows[0].email);
     if (result.error) {
       console.log("Database Error:", result.error);

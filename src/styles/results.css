@@ -541,7 +541,7 @@
 
 .result-right-parent-container {
   padding-left: 24px;
-  /* width: 80%; */
+  width: 80%;
   padding-top: 20px;
   padding-bottom: 20px;
 
@@ -553,13 +553,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 10px;
 }
 
 .result-line1 {
   display: flex;
   gap: 5px;
-  margin-top: 35px;
-  width: 10px;
+  margin-top: 58px;
+  width: 30px;
 }
 
 .active-text-search {

@@ -9,6 +9,9 @@ import HeartClick from "../../../../../../public/heartClickSvg";
 import NextImage from "next/image";
 import Link from "next/link";
 import ReactCountryFlag from "react-country-flag";
+import Arrow from "../../../../../../public/arrow";
+import ImageSlider from "react-simple-image-slider";
+import { ImageTwoTone } from "@mui/icons-material";
 
 export default function Hearted() {
   const [data, setData] = useState([]);
@@ -25,12 +28,18 @@ export default function Hearted() {
   const [showPrivate, setShowPrivate] = useState(false);
   //-----For blocking user---------
   const [showBlock, setShowBlock] = useState(false);
+  const [counts, setCounts] = useState([]);
   const [blockStart, setBlockStart] = useState(0);
   //------Time Stamps---------
   const [timeStamp, setTimeStamp] = useState([]);
   const { getCode, getName } = require("country-list");
   const [showWali, setShowWali] = useState(false);
-
+  const [showAll, setShowAll] = useState(false);
+  const [selectedUserData, setSelectedUserData] = useState(null);
+  const handleShowAll = (userInfo) => {
+    setShowAll(!showAll);
+    setSelectedUserData(userInfo);
+  };
   //-------------Api to retrieve data------------------
   useEffect(() => {
     const fetchData = async () => {
@@ -340,103 +349,133 @@ export default function Hearted() {
       return `${differenceDays} day${differenceDays > 1 ? "s" : ""} ago`;
     }
   };
+  //  update count data
+  const handleUpdateStatus = async () => {
+    // setIsLoading(true);
+
+    try {
+      // Retrieve email from localStorage
+      const email = localStorage.getItem("email");
+
+      // Check if email is available
+      if (!email) {
+        throw new Error("Email not found in localStorage");
+      }
+
+      // Mock API request - replace with your actual logic
+      const response = await fetch("/api/interest/setCount", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, user_status: 1 }), // Fixed value for user_status
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      console.log(response);
+    } catch (error) {
+      console.error("Error updating user status:", error.message);
+    } finally {
+      // setIsLoading(false);
+    }
+  };
+
+
+  const renderUserImages = (userInfo) => {
+    const userImages = imageData
+      .flat()
+      .filter((img) => img.email === userInfo.email)
+      .map((image, index) => ({
+        url:
+          index === 0 ? `data:image/jpeg;base64,${image.image}` : image.image,
+      }));
+
+    const isFemaleWithApproval =
+      userInfo.gender === "female" &&
+      requestCheck.some(
+        (request) =>
+          (request.receiver_email === userInfo.email ||
+            userInfo.email === email) &&
+          request.status === "approved"
+      );
+
+    const shouldDisplayImages =
+      userInfo.gender !== "female" || isFemaleWithApproval;
+
+    if (userImages.length === 0) {
+      return (
+        <NextImage
+          src="/female.jpeg"
+          width={150}
+          height={150}
+          style={{ border: "1px solid black" }}
+          alt="Female Placeholder"
+        />
+      );
+    }
+
+    if (!shouldDisplayImages) {
+      return (
+        <NextImage
+          src="/private.jpg"
+          width={150}
+          height={150}
+          style={{ border: "1px solid black" }}
+          alt="Private"
+        />
+      );
+    }
+
+    return (
+      <div className="image-slider-container">
+        <ImageSlider
+          width={150}
+          height={150}
+          images={userImages}
+          showBullets={false}
+          showNavs={true}
+          navMargin={-5}
+          navSize={30}
+          color={"red"}
+          navStyle={ImageTwoTone}
+        />
+      </div>
+    );
+  };
   return (
     <div>
-    <div className="bottom-container-search">
+      <div className="bottom-container-search" onMouseEnter={handleUpdateStatus}>
         {data.map((userInfo) => (
-          <div key={userInfo.id} className="result-parent-container-search">
+          <div
+            key={userInfo.id}
+            className="result-parent-container-search"
+            style={{
+              backgroundColor: counts.some(
+                (count) =>
+                  count.viewer_email === userInfo.email && count.views === 0
+              )
+                ? "#ededed"
+                : "white",
+            }}
+          >
             <div className="result-img-parent-search">
-              <div className="img-container-search">
-                <Link
-                  onClick={(e) => {
-                    e.preventDefault(); // Prevent the default behavior of the link
-                    setSelectedUserInfo(userInfo);
-                    ViewBio(e, userInfo.email);
-                    router.push({
-                      pathname:
-                        "/Pagess/create/results/viewProfile/viewProfile",
-                      query: {
-                        name: JSON.stringify(userInfo),
-                      },
-                    });
-                  }}
-                  href="/Pagess/create/results/viewProfile/viewProfile"
-                >
-                  {loaded && (
-                    <div>
-                      {imageData.some(
-                        (images) =>
-                          images.filter((img) => img.email === userInfo.email)
-                            .length > 0
-                      ) ? (
-                        <div>
-                          {userInfo.gender !== "female" ? (
-                            imageData
-                              .flat()
-                              .filter((img) => img.email === userInfo.email)
-                              .map((image, index) => (
-                                <div key={index}>
-                                  <NextImage
-                                    key={index}
-                                    src={
-                                      index === 0
-                                        ? `data:image/jpeg;base64,${image.image}`
-                                        : image.image
-                                    }
-                                    width={150}
-                                    height={150}
-                                    style={{ border: "1px solid black" }}
-                                    alt={`Image ${index}`}
-                                  />
-                                </div>
-                              ))
-                          ) :   requestCheck.some(
-                            request => (request.sender_email === userInfo.email || userInfo.email === email) && request.status === "approved"
-                          ) ? (
-
-                            imageData
-                            .flat()
-                            .filter((img) => img.email === userInfo.email)
-                            .map((image, index) => (
-                              <div key={index}>
-                                <NextImage
-                                  key={index}
-                                  src={
-                                    index === 0
-                                      ? `data:image/jpeg;base64,${image.image}`
-                                      : image.image
-                                  }
-                                  width={150}
-                                  height={150}
-                                  style={{ border: "1px solid black" }}
-                                  alt={`Image ${index}`}
-                                />
-                              </div>
-                            ))
-                            
-                          ) : (
-                            <NextImage
-                              src="/private.jpg"
-                              width={150}
-                              height={150}
-                              style={{ border: "1px solid black" }}
-                              alt=""
-                            />
-                          )}
-                        </div>
-                      ) : (
-                        <NextImage
-                          src="/female.jpeg"
-                          width={150}
-                          height={150}
-                          style={{ border: "1px solid black" }}
-                          alt=""
-                        />
-                      )}
-                    </div>
-                  )}
-                </Link>
-              </div>
+            <div className="result-main-img">
+            <div className="img-container-search">
+            {loaded ? (
+              renderUserImages(userInfo)
+            ) : (
+              <NextImage
+                src="/female.jpeg"
+                width={150}
+                height={150}
+                style={{ border: "1px solid black" }}
+                alt="Loading"
+              />
+            )}
+          </div>
             </div>
 
             <div className="result-line1">
@@ -816,7 +855,7 @@ export default function Hearted() {
               </div>
               <div className="result-line3-container-search">
                 <div>{userInfo.distance + " Km Away"}</div>
-                {/* {userInfo.types.slice(0, 3).map((type, index) => (
+                 {userInfo.types.slice(0, 3).map((type, index) => (
                   <div
                     key={index}
                     className={`result-line3 ${index}`}
@@ -824,15 +863,15 @@ export default function Hearted() {
                   >
                     {type}
                   </div>
-                ))} */}
-                {/* <div>
+                ))} 
+                 <div>
                   {!showAll && userInfo.types.length > 3 && (
                     <span onClick={() => handleShowAll(userInfo)}>
                       <Arrow />
                     </span>
                   )}
-                </div> */}
-                {/* {showAll && selectedUserData === userInfo && (
+                </div> 
+                {showAll && selectedUserData === userInfo && (
                   <div className="msg-container-search">
                     <div className="msg-sub-search">
                       <div className="msg-heading-search">
@@ -859,7 +898,7 @@ export default function Hearted() {
                       </div>
                     </div>
                   </div>
-                )} */}
+                )} 
 
                 <Link
                   className="view-bio-search"
@@ -955,6 +994,7 @@ export default function Hearted() {
                 </i>
               </span>
             </div>
+          </div>
           </div>
         ))}
       </div>

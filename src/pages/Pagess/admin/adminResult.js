@@ -4,6 +4,7 @@ import AdminNav from './adminNav'
 
 import Filters from '../create/results/filters'
 import SearchUserData from "./create/searchuserdata";
+import BlockedUser from "./create/blockedUser";
 
 const AdminResult = () => {
     const [showFilters, setShowFilters] = useState(true);
@@ -28,9 +29,13 @@ const AdminResult = () => {
     >
       BLOCKED
     </div>
+    <div>
+    </div>
   </div>
   <div className="full-width-border"></div>
-  <SearchUserData />
+
+    {option === "request" && <SearchUserData />}
+    {option === "blocked" && <BlockedUser />}
   {showFilters && (
     <div style={{ display: "none" }}>
       <Filters />

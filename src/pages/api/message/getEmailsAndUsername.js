@@ -24,7 +24,7 @@ export default async function GetInfoAcc(req, res) {
       AND b.sender_email IS NULL
       AND b.receiver_email IS NULL;
     `;
-    
+
     const uniqueEmails = [];
 
     result.rows.forEach((row) => {
@@ -47,10 +47,16 @@ export default async function GetInfoAcc(req, res) {
     for (const email of uniqueEmails) {
       // Execute SQL query to retrieve username for each email
       const userInfo = await sql`
-            SELECT username
-            FROM createAcc
-            WHERE email = ${email};
-        `;
+      SELECT username
+      FROM createAcc
+      WHERE email = ${email}
+      UNION
+      SELECT username
+      FROM admin
+      WHERE email = ${email};
+  `;
+
+      // Combine the results
 
       // Extract username from query result
       const username = userInfo.rows[0].username; // Assuming there's only one username per email

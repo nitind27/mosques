@@ -290,7 +290,7 @@ export default function MessageHome() {
     };
 
     fetchData();
-  }, [filteredMessage]);
+  }, [email]);
 
   //-----get unique Emails and usernames and store in images,setImages------
   useEffect(() => {
@@ -621,7 +621,7 @@ export default function MessageHome() {
                     setLoading2(true);
                   }}
                 >
-                  {loading2 ? (
+                  {loading ? (
                     <div className="parent-select-user-live">
                       <canvas
                         ref={(ref) => (imageRefs.current[index] = ref)}
@@ -664,7 +664,7 @@ export default function MessageHome() {
                           onLoad={() => handleImageRefLoaded(index)}
                         />
                       )}
-                      <div className="name-user-live">{image.email}</div>
+                      <div className="name-user-live">{image.username}</div>
                     </div>
                   ) : (
                     <div className="loader">

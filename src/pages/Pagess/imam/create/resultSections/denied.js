@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import ImageSlider from "react-simple-image-slider";
+import { ImageTwoTone } from "@mui/icons-material";
 
 import Image from "next/image";
 import { use } from "i18next";
@@ -44,9 +46,10 @@ export default function Denied() {
   const { getCode, getName } = require("country-list");
   const [showAll, setShowAll] = useState(false);
 
-
-  const handleShowAll = () => {
-    setShowAll(true);
+  const [selectedUserData, setSelectedUserData] = useState(null);
+  const handleShowAll = (userInfo) => {
+    setShowAll(!showAll);
+    setSelectedUserData(userInfo);
   };
 
   //-------------Api to retrieve data for all males----------
@@ -193,69 +196,88 @@ export default function Denied() {
     getImg();
   }, [data]);
 
+
+  const renderUserImages = (userInfo) => {
+    const userImages = imageData
+      .flat()
+      .filter((img) => img.email === userInfo.email)
+      .map((image, index) => ({
+        url:
+          index === 0 ? `data:image/jpeg;base64,${image.image}` : image.image,
+      }));
+
+    const isFemaleWithApproval =
+      userInfo.gender === "female" &&
+      requestCheck.some(
+        (request) =>
+          (request.receiver_email === userInfo.email ||
+            userInfo.email === email) &&
+          request.status === "approved"
+      );
+
+    const shouldDisplayImages =
+      userInfo.gender !== "female" || isFemaleWithApproval;
+
+    if (userImages.length === 0) {
+      return (
+        <NextImage
+          src="/female.jpeg"
+          width={150}
+          height={150}
+          style={{ border: "1px solid black" }}
+          alt="Female Placeholder"
+        />
+      );
+    }
+
+    if (!shouldDisplayImages) {
+      return (
+        <NextImage
+          src="/private.jpg"
+          width={150}
+          height={150}
+          style={{ border: "1px solid black" }}
+          alt="Private"
+        />
+      );
+    }
+
+    return (
+      <div className="image-slider-container">
+        <ImageSlider
+          width={150}
+          height={150}
+          images={userImages}
+          showBullets={false}
+          showNavs={true}
+          navMargin={-5}
+          navSize={30}
+          color={"red"}
+          navStyle={ImageTwoTone}
+        />
+      </div>
+    );
+  };
   //CSS IN imam.css in AWAITING SECTION
   return (
     <div className="bottom-container-search">
     {data.map((userInfo) => (
       <div key={userInfo.id} className="result-parent-container-search">
         <div className="result-img-parent-search">
-          <div className="img-container-search">
-            <Link
-              onClick={(e) => {
-                e.preventDefault(); // Prevent the default behavior of the link
-                setSelectedUserInfo(userInfo);
-                ViewBio(e, userInfo.email);
-                router.push({
-                  pathname:
-                    "/Pagess/create/results/viewProfile/viewProfile",
-                  query: {
-                    name: JSON.stringify(userInfo),
-                  },
-                });
-              }}
-              href="/Pagess/create/results/viewProfile/viewProfile"
-            >
-              {loaded ? (
-                <div>
-                  {imageData
-                    .filter((img) => img.email === userInfo.email)
-                    .map((img) => (
-                      <NextImage
-                        unoptimized
-                        key={img.email} // Ensure each NextImage has a unique key
-                        src={`data:image/jpeg;base64,${img.image}`}
-                        width={100}
-                        height={100}
-                        style={{
-                          border: "1px solid black",
-                          width: "150px",
-                          height: "150px",
-                        }}
-                        alt=""
-                      />
-                    ))}
-
-                  {imageData.filter((img) => img.email === userInfo.email)
-                    .length === 0 && (
-                    <NextImage
-                      unoptimized
-                      src="/female.jpeg" // Set src to "/female.jpeg" if no images found
-                      width={100}
-                      height={100}
-                      style={{
-                        border: "1px solid black",
-                        width: "150px",
-                        height: "150px",
-                      }}
-                      alt=""
-                    />
-                  )}
-                </div>
-              ) : (
-                <div></div>
-              )}
-            </Link>
-          </div>
+        <div className="result-main-img">
+        <div className="img-container-search">
+        {loaded ? (
+          renderUserImages(userInfo)
+        ) : (
+          <NextImage
+            src="/female.jpeg"
+            width={150}
+            height={150}
+            style={{ border: "1px solid black" }}
+            alt="Loading"
+          />
+        )}
+      </div>
         </div>
 
         <div className="result-line1">
@@ -634,27 +656,51 @@ export default function Denied() {
             {/* ^^^^^^^^^^^^^ */}
           </div>
           <div className="result-line3-container-search">
-            <div>{userInfo.distance + " Km Away"}</div>
-
-            {userInfo.types 
-              .slice(0, showAll ? userInfo.types.length : 3)
-              .map((type, index) => (
-                <div
-                  key={index}
-                  className={`result-line3 ${index}`}
-                  data-tooltip={type} // Add data-tooltip attribute with the type value
-                >
-                  {type}
-                </div>
-              ))}
-
-            <div>
-              {!showAll && userInfo.types.length > 3 && (
-                <span onClick={handleShowAll}>
-                  <Arrow />
-                </span>
-              )}
+          <div>{userInfo.distance + " Km Away"}</div>
+           {userInfo.types.slice(0, 3).map((type, index) => (
+            <div
+              key={index}
+              className={`result-line3 ${index}`}
+              data-tooltip={type}
+            >
+              {type}
             </div>
+          ))} 
+          <div>
+            {!showAll && userInfo.types.length > 3 && (
+              <span onClick={() => handleShowAll(userInfo)}>
+                <Arrow />
+              </span>
+            )}
+          </div> 
+           {showAll && selectedUserData === userInfo && (
+            <div className="msg-container-search">
+              <div className="msg-sub-search">
+                <div className="msg-heading-search">
+                  <div className="msg-text-search">Types</div>
+                  <div className="close-msg-search">
+                    <div
+                      onClick={(e) => {
+                        setShowAll(false);
+                      }}
+                    >
+                      X
+                    </div>
+                  </div>
+                </div>
+                <div className="divider-msg-search"></div>
+                <div className="msg-mini-container-search">
+                  <ul>
+                    {selectedUserData.types.map((type, index) => (
+                      <li key={index} className="msg-mini-text-search">
+                        {type}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          )} 
              
             <Link
               className="view-bio-search"
@@ -751,6 +797,7 @@ export default function Denied() {
             </i>
           </span>
         </div>
+      </div>
       </div>
     ))}
   </div>

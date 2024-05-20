@@ -62,7 +62,7 @@ export default function Interest() {
                   Viewed Me
                 </div>
                 <div
-                  className="view-text-interest4"
+                  className="view-text-interest4 "
                   style={{ color: viewSelect === "4" ? "#b52d3b" : "" }}
                   onClick={() => setViewSelect("4")}
                 >
@@ -84,7 +84,7 @@ export default function Interest() {
                   Favourited Me
                 </div>
                 <div
-                  className="view-text-interest"
+                  className="view-text-interest two"
                   style={{ color: viewSelect === "6" ? "#b52d3b" : "" }}
                   onClick={() => setViewSelect("6")}
                 >

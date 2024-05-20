@@ -1,8 +1,8 @@
 import { useState, useEffect, useContext, use } from "react";
-import { useRouter } from "next/navigation";
 import ImageSlider from "react-simple-image-slider";
 import { ImageTwoTone } from "@mui/icons-material";
 
+import { useRouter } from "next/navigation";
 import { AppContext } from "../../AppContext";
 import Camera from "../../../../../public/camerasvg";
 import Envelope from "../../../../../public/envelope";
@@ -16,16 +16,16 @@ import Link from "next/link";
 import Arrow from "../../../../../public/arrow";
 import ReactCountryFlag from "react-country-flag";
 import { countries } from "country-data";
-export default function SearchUserData() {
+export default function BlockedUser() {
   const [data, setData] = useState([]);
   //Setting the Current User's Coordinates
-  const [requestCheck, setRequestCheck] = useState([]);
-  const [cLocation, setcLocation] = useState(null);
 
+  const [cLocation, setcLocation] = useState(null);
+  const [requestCheck, setRequestCheck] = useState([]);
   let locationSet = false;
   const [email, setEmail] = useState("");
   const [filteredData, setFilteredData] = useState([]);
-  console.log("dad0", filteredData);
+  console.log("dad01111", filteredData);
   const { filterContext, setFilterContext } = useContext(AppContext);
   //Context Range Variable
   const { rangeContext, setRangeContext } = useContext(AppContext);
@@ -138,7 +138,7 @@ export default function SearchUserData() {
       setEmail(email1);
       try {
         //Getting all users
-        const res = await fetch("/api/createAcc/getInfoAcc", {
+        const res = await fetch("/api/createAcc/getBlocked", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -151,6 +151,7 @@ export default function SearchUserData() {
           return;
         }
         const response = await res.json();
+       
 
         //Getting users who you have blocked
         const res2 = await fetch("/api/interest/getBlocked", {
@@ -790,6 +791,7 @@ export default function SearchUserData() {
 
 
   
+  
   const renderUserImages = (userInfo) => {
     const userImages = imageData
       .flat()
@@ -857,8 +859,7 @@ export default function SearchUserData() {
         {filteredData.map((userInfo) => (
           <div key={userInfo.id} className="result-parent-container-search">
             <div className="result-img-parent-search">
-              <div className="result-main-img">
-              <div className="img-container-search">
+            <div className="img-container-search">
             {loaded ? (
               renderUserImages(userInfo)
             ) : (
@@ -871,30 +872,30 @@ export default function SearchUserData() {
               />
             )}
           </div>
-                <div className="result-line1">
-                  <div className="flag-container">
-                    <ReactCountryFlag
-                      countryCode={getCode(`${userInfo.aboutme_country}`)}
-                      svg
-                      title="India"
-                      className="result-line1-flag"
-                      style={{ height: "20px", width: "20px" }} // Set height and width inline
-                    />
-                  </div>
-                  <div className="flag-container">
-                    <ReactCountryFlag
-                      countryCode={getCode(`${userInfo.personal_origin}`)}
-                      svg
-                      style={{
-                        marginRight: "10px",
-                        height: "20px",
-                        width: "20px",
-                      }} // Set height and width inline
-                      title="India"
-                      className="result-line1-flag"
-                    />
-                  </div>
-                </div>
+            </div>
+
+            <div className="result-line1">
+              <div className="flag-container">
+                <ReactCountryFlag
+                  countryCode={getCode(`${userInfo.aboutme_country}`)}
+                  svg
+                  title="India"
+                  className="result-line1-flag"
+                  style={{ height: "20px", width: "20px" }} // Set height and width inline
+                />
+              </div>
+              <div className="flag-container">
+                <ReactCountryFlag
+                  countryCode={getCode(`${userInfo.personal_origin}`)}
+                  svg
+                  style={{
+                    marginRight: "10px",
+                    height: "20px",
+                    width: "20px",
+                  }} // Set height and width inline
+                  title="India"
+                  className="result-line1-flag"
+                />
               </div>
             </div>
 
@@ -915,22 +916,7 @@ export default function SearchUserData() {
                   })}
                 </div>
               </div>
-
-              <div className="result-block">
-                <div className="result-line1-container-search">
-                  <div>{userInfo.aboutme_looking}</div>
-                  <div className="active-text-search-stop">
-                    <Stop />
-                  </div>
-                </div>
-
-                <div className="result-line1-container-search">
-                  <div>{userInfo.aboutme_looking}</div>
-                  <div className="active-text-search-envelope">
-                    <Envelope />
-                  </div>
-                </div>
-              </div>
+          
 
               <div className="result-line2-container-search">
                 <div className="result-line2">

@@ -24,29 +24,23 @@ export default async function AwaitingUserGET(req, res) {
         FROM mosques
         WHERE email = ${email1};`;
 
-      const checkEmail4 = await sql`
-      SELECT 
-      createAcc.*, 
-      CONCAT('[', STRING_AGG(CONCAT('[', mosques.latitude, ',', mosques.longitude, ',\"', mosques.type, '\"]'), ','), ']') AS locations, 
-      ARRAY_AGG(mosques.type) AS types
-  FROM 
-      createAcc
-  LEFT JOIN 
-      mosques ON createAcc.email = mosques.email
-  LEFT JOIN 
-      verify ON createAcc.email = verify.user_email
-  WHERE 
-      createAcc.gender = 'male'
-      AND createAcc.email != ${email1} 
-      AND verify.user_email IS NULL
-      AND mosques.type = ANY (${imamMosque.rows.map((imam) => imam.type)})
-  GROUP BY 
-      createAcc.email;
-  
-  
-  
-`;
-
+        const checkEmail4 = await sql`
+        SELECT 
+            createAcc.*, 
+            CONCAT('[', STRING_AGG(CONCAT('[', mosques.latitude, ',', mosques.longitude, ',\"', mosques.type, '\"]'), ','), ']') AS locations, 
+            ARRAY_AGG(mosques.type) AS types
+        FROM 
+            heart h
+        JOIN 
+            createAcc ON h.hearted_email = createAcc.email
+        LEFT JOIN 
+            mosques ON createAcc.email = mosques.email
+        WHERE 
+            h.hearter_email = ${email1}
+        GROUP BY 
+            createAcc.email;
+    `;
+    
       const uniqueEmails = new Set();
 
       // Filtering users in the same mosque as the imam and removing duplicates based on email
