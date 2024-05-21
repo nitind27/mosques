@@ -554,6 +554,8 @@
   justify-content: space-between;
   align-items: center;
   gap: 10px;
+  /* margin-left:10px ; */
+  gap: 10px;
 }
 
 .result-line1 {

@@ -586,8 +586,6 @@ export default function ViewedMe() {
               />
             )}
           </div>
-            </div>
-
             <div className="result-line1">
               <div className="flag-container">
                 <ReactCountryFlag
@@ -613,6 +611,9 @@ export default function ViewedMe() {
               </div>
             </div>
 
+            </div>
+
+          
             <div className="result-right-parent-container">
               <div className="result-line1-container-search">
                 <div>{userInfo.aboutme_looking}</div>
@@ -880,7 +881,7 @@ export default function ViewedMe() {
                     setShowWali(true);
                   }}
                 >
-                  {userInfo.gender}
+                
                   {userInfo.gender == "female" && <WaliRed />}
                 </div>
                 {showWali && (

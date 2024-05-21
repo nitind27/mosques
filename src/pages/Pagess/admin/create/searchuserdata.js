@@ -788,8 +788,6 @@ export default function SearchUserData() {
     }
   };
 
-
-  
   const renderUserImages = (userInfo) => {
     const userImages = imageData
       .flat()
@@ -858,19 +856,19 @@ export default function SearchUserData() {
           <div key={userInfo.id} className="result-parent-container-search">
             <div className="result-img-parent-search">
               <div className="result-main-img">
-              <div className="img-container-search">
-            {loaded ? (
-              renderUserImages(userInfo)
-            ) : (
-              <NextImage
-                src="/female.jpeg"
-                width={150}
-                height={150}
-                style={{ border: "1px solid black" }}
-                alt="Loading"
-              />
-            )}
-          </div>
+                <div className="img-container-search">
+                  {loaded ? (
+                    renderUserImages(userInfo)
+                  ) : (
+                    <NextImage
+                      src="/female.jpeg"
+                      width={150}
+                      height={150}
+                      style={{ border: "1px solid black" }}
+                      alt="Loading"
+                    />
+                  )}
+                </div>
                 <div className="result-line1">
                   <div className="flag-container">
                     <ReactCountryFlag

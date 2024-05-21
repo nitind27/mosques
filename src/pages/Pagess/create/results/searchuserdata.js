@@ -908,9 +908,7 @@ export default function SearchUserData() {
                   />
                 )}
               </div>
-            </div>
-
-            <div className="result-line1">
+              <div className="result-line1">
               <div className="flag-container">
                 <ReactCountryFlag
                   countryCode={getCode(`${userInfo.aboutme_country}`)}
@@ -934,24 +932,12 @@ export default function SearchUserData() {
                 />
               </div>
             </div>
+            </div>
+
+    
 
             <div className="result-right-parent-container">
-              <div className="result-line1-container-search">
-                <div>{userInfo.aboutme_looking}</div>
-                <div className="active-text-search">
-                  <strong>Active:</strong>
-                  {timeStamp.map((timestampItem) => {
-                    if (timestampItem.email === userInfo.email) {
-                      return (
-                        <div key={timestampItem.email}>
-                          {formatTimeAgo(timestampItem.active_since)}
-                        </div>
-                      );
-                    }
-                    return null; // Return null if no match
-                  })}
-                </div>
-              </div>
+          
 
               <div className="result-line2-container-search">
                 <div className="result-line2">

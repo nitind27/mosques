@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import ImageSlider from "react-simple-image-slider";
+import { ImageTwoTone } from "@mui/icons-material";
+
 import ResultHeart from "../../../../../../public/resultheartsvg";
 import Camera from "../../../../../../public/camerasvg";
 import Envelope from "../../../../../../public/envelope";
@@ -550,9 +553,7 @@ export default function Viewed() {
               />
             )}
           </div>
-            </div>
-
-            <div className="result-line1">
+          <div className="result-line1">
               <div className="flag-container">
                 <ReactCountryFlag
                   countryCode={getCode(`${userInfo.aboutme_country}`)}
@@ -576,6 +577,9 @@ export default function Viewed() {
                 />
               </div>
             </div>
+            </div>
+
+        
 
             <div className="result-right-parent-container">
               <div className="result-line1-container-search">
@@ -844,7 +848,7 @@ export default function Viewed() {
                     setShowWali(true);
                   }}
                 >
-                  {userInfo.gender}
+              
                   {userInfo.gender == "female" && <WaliRed />}
                 </div>
                 {showWali && (

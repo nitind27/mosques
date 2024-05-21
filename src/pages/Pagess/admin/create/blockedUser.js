@@ -872,9 +872,7 @@ export default function BlockedUser() {
               />
             )}
           </div>
-            </div>
-
-            <div className="result-line1">
+          <div className="result-line1">
               <div className="flag-container">
                 <ReactCountryFlag
                   countryCode={getCode(`${userInfo.aboutme_country}`)}
@@ -899,6 +897,9 @@ export default function BlockedUser() {
               </div>
             </div>
 
+            </div>
+
+            
             <div className="result-right-parent-container">
               <div className="result-line1-container-search">
                 <div>{userInfo.aboutme_looking}</div>
